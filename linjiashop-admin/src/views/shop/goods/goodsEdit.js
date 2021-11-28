@@ -128,7 +128,7 @@ export default {
           this.spec = this.skuList.length > 0 ? 'more' : 'one'
           let galleryArr = this.form.gallery.split(',')
           for (let i = 0; i < galleryArr.length; i++) {
-            if (galleryArr[i] != '') {
+            if (galleryArr[i] !== '') {
               this.galleryList.push({
                 id: galleryArr[i],
                 url: this.apiUrl + '/file/getImgStream?idFile=' + galleryArr[i]
@@ -154,7 +154,7 @@ export default {
     },
     save() {
 
-      if (!this.idGoods && this.active == 0) {
+      if (!this.idGoods && this.active === 0) {
         //第一步提交的时候先保存下商品以便获取商品id
         if (this.form.name === '' ||
           this.form.idCategory === '' ||
@@ -217,13 +217,14 @@ export default {
     getGallery() {
       let gallery = ''
       for (let i = 0; i < this.galleryList.length; i++) {
-        if (i == 0) {
+        if (i === 0) {
           gallery = this.galleryList[i].id
         } else {
           gallery += (',' + this.galleryList[i].id)
         }
 
       }
+      console.log("gallery: "+gallery)
       return gallery
     },
     handleRemove: function (file, fileList) {
