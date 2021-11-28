@@ -21,7 +21,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: '/',
+  publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: false,
@@ -35,7 +35,7 @@ module.exports = {
     },
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost:8082`,
+        target: `http://120.76.241.162:18082`,
         changeOrigin: true,// target是域名的话，需要这个参数
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

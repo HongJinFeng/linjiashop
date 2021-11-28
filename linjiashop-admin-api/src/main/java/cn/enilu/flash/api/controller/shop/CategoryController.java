@@ -28,127 +28,135 @@ import java.util.List;
 @RestController
 @RequestMapping("/shop/category")
 public class CategoryController extends BaseController {
-	private  Logger logger = LoggerFactory.getLogger(getClass());
-	@Autowired
-	private CategoryService categoryService;
-	@Autowired
-	private CategoryBannerRelService categoryBannerRelService;
-	@Autowired
-	private AttrKeyService attrKeyService;
-	@Autowired
-	private GoodsService goodsService;
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private CategoryBannerRelService categoryBannerRelService;
+    @Autowired
+    private AttrKeyService attrKeyService;
+    @Autowired
+    private GoodsService goodsService;
 
-	@RequestMapping(value = "/list",method = RequestMethod.GET)
-	public Object list() {
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public Object list() {
 //		Page<Category> page = new PageFactory<Category>().defaultPage();
 //		page.setSort(Sort.by(Sort.Direction.ASC,"sort"));
 //		page = categoryService.queryPage(page);
 //		List<Category> list = categoryService.queryAll(Sort.by(Sort.Direction.ASC,"sort"));
-		List<CategoryNode> list = categoryService.getCategories();
-		return Rets.success(list);
-	}
-	@RequestMapping(value = "/getAll",method = RequestMethod.GET)
-	public Object getAll() {
+        List<CategoryNode> list = categoryService.getCategories();
+        return Rets.success(list);
+    }
 
-		List<Category> categories = categoryService.queryAll();
-		return Rets.success(categories);
-	}
-	@RequestMapping(method = RequestMethod.POST)
-	@BussinessLog(value = "编辑商品类别", key = "name")
-	@RequiresPermissions(value = {Permission.CATEGORY_EDIT})
-	public Object save(@ModelAttribute Category category){
-		if(category.getId()==null){
-			categoryService.insert(category);
-		}else {
-			Category old = categoryService.get(category.getId());
-			category.setCreateBy(old.getCreateBy());
-			category.setCreateTime(old.getCreateTime());
-			categoryService.update(category);
-		}
-		return Rets.success();
-	}
-	@RequestMapping(method = RequestMethod.DELETE)
-	@BussinessLog(value = "删除商品类别", key = "id")
-	@RequiresPermissions(value = {Permission.CATEGORY_EDIT})
-	public Object remove(Long id){
-		if (id == null) {
-			throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
-		}
-		long goodsCount = goodsService.count(SearchFilter.build("idCategory",id));
-		if(goodsCount>0){
-			throw new ApplicationException(ApplicationExceptionEnum.DATA_CANNOT_REMOVE);
-		}
-		categoryService.deleteById(id);
-		return Rets.success();
-	}
-	@RequestMapping(value="/getBanners/{idCategory}",method = RequestMethod.GET)
-	public Object getBanners(@PathVariable("idCategory") Long idCategory){
-		if (idCategory == null) {
-			throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
-		}
-		List<CategoryBannerRel> relList = categoryBannerRelService.queryAll(SearchFilter.build("idCategory", SearchFilter.Operator.EQ,idCategory));
-		List<Banner> bannerList = Lists.newArrayList();
-		relList.forEach( item->{
-			bannerList.add(item.getBanner());
-		});
+    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+    public Object getAll() {
 
-		return Rets.success(bannerList);
-	}
-	@RequestMapping(value ="getAttrKeys/{idCategory}",method = RequestMethod.GET)
-	public Object getAttrKeys(@PathVariable("idCategory") Long idCategory){
-		if (idCategory == null) {
-			throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
-		}
-		List<AttrKey> list = attrKeyService.queryBy(idCategory);
-		return Rets.success(list);
+        List<Category> categories = categoryService.queryAll();
+        return Rets.success(categories);
+    }
 
-	}
-	@RequestMapping(value="/removeBanner/{idCategory}/{idBanner}",method = RequestMethod.DELETE)
-	@RequiresPermissions(value = {Permission.CATEGORY_EDIT})
-	public Object removeBanner(@PathVariable("idCategory") Long idCategory,
-							@PathVariable("idBanner") Long idBanner){
-		if (idCategory == null) {
-			throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
-		}
-		CategoryBannerRel rel = categoryBannerRelService.get(Lists.newArrayList(
-				SearchFilter.build("idCategory",idCategory),
-				SearchFilter.build("idBanner",idBanner)
-		));
-		if(rel!=null){
-			categoryBannerRelService.delete(rel);
-		}
-		return Rets.success();
-	}
-	@RequestMapping(value="/setBanner/{idCategory}/{idBanner}",method = RequestMethod.POST)
-	@RequiresPermissions(value = {Permission.CATEGORY_EDIT})
-	public Object setBanner(@PathVariable("idCategory") Long idCategory,
-							@PathVariable("idBanner") Long idBanner){
-		if (idCategory == null) {
-			throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
-		}
-		CategoryBannerRel rel = categoryBannerRelService.get(Lists.newArrayList(
-				SearchFilter.build("idCategory",idCategory),
-				SearchFilter.build("idBanner",idBanner)
-		));
-		if(rel!=null){
-			return Rets.success();
-		}
-		rel = new CategoryBannerRel();
-		rel.setIdCategory(idCategory);
-		rel.setIdBanner(idBanner);
-		categoryBannerRelService.insert(rel);
-		return Rets.success();
-	}
-	@PostMapping(value="/changeShowIndex/{idCategory}/{showIndex}")
-	@RequiresPermissions(value = {Permission.CATEGORY_EDIT})
-	public Object changeShowIndex(@PathVariable("idCategory") Long idCategory,
-							@PathVariable("showIndex") Boolean showIndex){
-		if (idCategory == null) {
-			throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
-		}
-		Category category = categoryService.get(idCategory);
-		category.setShowIndex(showIndex);
-		categoryService.update(category);
-		return Rets.success();
-	}
+    @RequestMapping(method = RequestMethod.POST)
+    @BussinessLog(value = "编辑商品类别", key = "name")
+    @RequiresPermissions(value = {Permission.CATEGORY_EDIT})
+    public Object save(@ModelAttribute Category category) {
+        if (category.getId() == null) {
+            categoryService.insert(category);
+        } else {
+            Category old = categoryService.get(category.getId());
+            category.setCreateBy(old.getCreateBy());
+            category.setCreateTime(old.getCreateTime());
+            categoryService.update(category);
+        }
+        return Rets.success();
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    @BussinessLog(value = "删除商品类别", key = "id")
+    @RequiresPermissions(value = {Permission.CATEGORY_EDIT})
+    public Object remove(Long id) {
+        if (id == null) {
+            throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
+        }
+        long goodsCount = goodsService.count(Lists.newArrayList(SearchFilter.build("idCategory", id), SearchFilter.build("isDelete", false)));
+        if (goodsCount > 0) {
+            throw new ApplicationException(ApplicationExceptionEnum.DATA_CANNOT_REMOVE);
+        }
+        categoryService.deleteById(id);
+        return Rets.success();
+    }
+
+    @RequestMapping(value = "/getBanners/{idCategory}", method = RequestMethod.GET)
+    public Object getBanners(@PathVariable("idCategory") Long idCategory) {
+        if (idCategory == null) {
+            throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
+        }
+        List<CategoryBannerRel> relList = categoryBannerRelService.queryAll(SearchFilter.build("idCategory", SearchFilter.Operator.EQ, idCategory));
+        List<Banner> bannerList = Lists.newArrayList();
+        relList.forEach(item -> {
+            bannerList.add(item.getBanner());
+        });
+
+        return Rets.success(bannerList);
+    }
+
+    @RequestMapping(value = "getAttrKeys/{idCategory}", method = RequestMethod.GET)
+    public Object getAttrKeys(@PathVariable("idCategory") Long idCategory) {
+        if (idCategory == null) {
+            throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
+        }
+        List<AttrKey> list = attrKeyService.queryBy(idCategory);
+        return Rets.success(list);
+
+    }
+
+    @RequestMapping(value = "/removeBanner/{idCategory}/{idBanner}", method = RequestMethod.DELETE)
+    @RequiresPermissions(value = {Permission.CATEGORY_EDIT})
+    public Object removeBanner(@PathVariable("idCategory") Long idCategory,
+                               @PathVariable("idBanner") Long idBanner) {
+        if (idCategory == null) {
+            throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
+        }
+        CategoryBannerRel rel = categoryBannerRelService.get(Lists.newArrayList(
+                SearchFilter.build("idCategory", idCategory),
+                SearchFilter.build("idBanner", idBanner)
+        ));
+        if (rel != null) {
+            categoryBannerRelService.delete(rel);
+        }
+        return Rets.success();
+    }
+
+    @RequestMapping(value = "/setBanner/{idCategory}/{idBanner}", method = RequestMethod.POST)
+    @RequiresPermissions(value = {Permission.CATEGORY_EDIT})
+    public Object setBanner(@PathVariable("idCategory") Long idCategory,
+                            @PathVariable("idBanner") Long idBanner) {
+        if (idCategory == null) {
+            throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
+        }
+        CategoryBannerRel rel = categoryBannerRelService.get(Lists.newArrayList(
+                SearchFilter.build("idCategory", idCategory),
+                SearchFilter.build("idBanner", idBanner)
+        ));
+        if (rel != null) {
+            return Rets.success();
+        }
+        rel = new CategoryBannerRel();
+        rel.setIdCategory(idCategory);
+        rel.setIdBanner(idBanner);
+        categoryBannerRelService.insert(rel);
+        return Rets.success();
+    }
+
+    @PostMapping(value = "/changeShowIndex/{idCategory}/{showIndex}")
+    @RequiresPermissions(value = {Permission.CATEGORY_EDIT})
+    public Object changeShowIndex(@PathVariable("idCategory") Long idCategory,
+                                  @PathVariable("showIndex") Boolean showIndex) {
+        if (idCategory == null) {
+            throw new ApplicationException(ApplicationExceptionEnum.REQUEST_NULL);
+        }
+        Category category = categoryService.get(idCategory);
+        category.setShowIndex(showIndex);
+        categoryService.update(category);
+        return Rets.success();
+    }
 }

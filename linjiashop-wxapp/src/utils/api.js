@@ -2,7 +2,7 @@ import store from './store'
 import utils from '@/utils/index.js'
 
 // const host = 'http://linjiashop-mobile-api.microapp.store/'
-const host = 'http://localhost:8081/'
+const host = 'http://120.76.241.162:18081/'
 export default ($wx) => {
   let reqHeader = {
     'content-type': 'application/json'
