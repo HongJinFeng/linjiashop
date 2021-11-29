@@ -9,21 +9,21 @@
                     required
                     clearable
                     label="账号"
-                    placeholder="请输入手机号"
+                    placeholder="请输入账号名"
             />
             </van-cell-group>
-            <van-cell-group v-show="show1">
+<!--            <van-cell-group v-show="show1">
                 <van-field
                         v-model="smsCode"
                         center
                         clearable
-                        label="短信验证码"
-                        placeholder="请输入短信验证码"
+                        label="验证码"
+                        placeholder="请输入验证码"
                 >
                     <van-button slot="button" size="small" type="primary" @click="sendSms" v-show="!hasSendSms">发送验证码</van-button>
                     <van-button slot="button" size="small" disabled type="primary" v-show="hasSendSms">{{second}}秒后重新获取</van-button>
                 </van-field>
-            </van-cell-group>
+            </van-cell-group>-->
             <van-cell-group  v-show="show2">
             <van-field
                     v-model="password"
@@ -35,14 +35,14 @@
 
         </van-cell-group>
             <div class="button-group">
-            <van-button type="warning" size="large"   v-show="show1" @click="loginOrRegister">立即登录/注册</van-button>
+            <van-button type="warning" size="large"   v-show="show1" @click="loginOrRegister">立即注册</van-button>
 
             <van-button type="info" size="large"   v-show="show1" @click="toLoginByPassword">用户名密码登录</van-button>
 
             <van-button type="warning" size="large"  v-show="show2"  @click="loginByPass">登录</van-button>
 
 
-        <van-button type="info" size="large"  v-show="show2" @click="toRegister">手机短信登录/注册</van-button>
+        <van-button type="info" size="large"  v-show="show2" @click="toRegister">注册</van-button>
             </div>
         <van-tabbar v-model="activeFooter">
             <van-tabbar-item icon="home-o"  replace to="/index">首页</van-tabbar-item>

@@ -45,15 +45,15 @@ public class LoginController extends BaseController {
 
     @RequestMapping(value = "sendSmsCode", method = RequestMethod.POST)
     public Object sendSmsCode(@RequestParam String mobile) {
-        if("15011112222".equals(mobile)){
+        if ("15011112222".equals(mobile)) {
             return Rets.success(shopUserService.sendSmsCodeForTest(mobile));
         }
         if ("prod".equals(applicationProperties.getEnv())) {
             //生产环境
-            if(StringUtil.isMobile(mobile)) {
+            if (StringUtil.isMobile(mobile)) {
                 Boolean ret = shopUserService.sendSmsCode(mobile);
                 return Rets.success(ret);
-            }else{
+            } else {
                 return Rets.failure("非法的手机号");
             }
         } else {
@@ -68,41 +68,40 @@ public class LoginController extends BaseController {
      * 使用手机号和短信验证码登录或者注册
      *
      * @param mobile
-     * @param smsCode
      * @return
      */
     @RequestMapping(value = "loginOrReg", method = RequestMethod.POST)
-    public Object loginOrReg(@RequestParam String mobile, @RequestParam String smsCode) {
+    public Object loginOrReg(@RequestParam String mobile/*, @RequestParam String password*/) {
         try {
-            logger.info("用户登录:" + mobile + ",短信验证码:" + smsCode);
+            logger.info("用户登录:" + mobile);
             //1,
             ShopUser user = shopUserService.findByMobile(mobile);
-            Boolean validateRet = shopUserService.validateSmsCode(mobile, smsCode);
-
-            Map<String, Object> result = new HashMap<>(6);
-            if (validateRet) {
-                if (user == null) {
-                    //初始化6位密码
-                    String initPassword = RandomUtil.getRandomString(6);
-                    user = shopUserService.register(mobile, initPassword);
-                    result.put("initPassword", initPassword);
-                }
-                String token = userService.loginForToken(new JwtUser(user));
-                user.setLastLoginTime(new Date());
-                shopUserService.update(user);
-                UserInfo userInfo = new UserInfo();
-                BeanUtils.copyProperties(user, userInfo);
-                WechatInfo wechatInfo = cacheDao.hget(CacheDao.SESSION,"WECHAT_INFO"+user.getId(),WechatInfo.class);
-                if(wechatInfo!=null){
-                    userInfo.setRefreshWechatInfo(false);
-                }
-                result.put("user", userInfo);
-                logger.info("token:{}", token);
-                result.put("token", token);
-                return Rets.success(result);
+            //Boolean validateRet = shopUserService.validateSmsCode(mobile, smsCode);
+            if (user != null) {
+                return Rets.failure("用户名已存在");
             }
+            Map<String, Object> result = new HashMap<>(6);
+            //if (validateRet) {
+            //初始化6位密码
+            String initPassword = RandomUtil.getRandomString(6);
+            user = shopUserService.register(mobile, initPassword);
+            result.put("initPassword", initPassword);
+            String token = userService.loginForToken(new JwtUser(user));
+            user.setLastLoginTime(new Date());
+            shopUserService.update(user);
+            UserInfo userInfo = new UserInfo();
+            BeanUtils.copyProperties(user, userInfo);
+            WechatInfo wechatInfo = cacheDao.hget(CacheDao.SESSION, "WECHAT_INFO" + user.getId(), WechatInfo.class);
+            if (wechatInfo != null) {
+                userInfo.setRefreshWechatInfo(false);
+            }
+            result.put("user", userInfo);
+            logger.info("token:{}", token);
+            result.put("token", token);
+            return Rets.success(result);
+            //}
 
-            return Rets.failure("短信验证码错误");
+            // return Rets.failure("短信验证码错误");
 
 
         } catch (Exception e) {
@@ -139,8 +138,8 @@ public class LoginController extends BaseController {
             shopUserService.update(user);
             UserInfo userInfo = new UserInfo();
             BeanUtils.copyProperties(user, userInfo);
-            WechatInfo wechatInfo = cacheDao.hget(CacheDao.SESSION,"WECHAT_INFO"+user.getId(),WechatInfo.class);
-            if(wechatInfo!=null){
+            WechatInfo wechatInfo = cacheDao.hget(CacheDao.SESSION, "WECHAT_INFO" + user.getId(), WechatInfo.class);
+            if (wechatInfo != null) {
                 userInfo.setRefreshWechatInfo(false);
             }
             logger.info("token:{}", token);
