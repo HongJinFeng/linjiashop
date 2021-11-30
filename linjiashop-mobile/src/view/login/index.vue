@@ -16,9 +16,10 @@
                 <van-field
                         v-model="smsCode"
                         center
+                        required
                         clearable
                         label="密码"
-                        placeholder="请输入密码"
+                        placeholder="请输入8位以上密码"
                 >
 <!--                    <van-button slot="button" size="small" type="primary" @click="sendSms" v-show="!hasSendSms">发送验证码</van-button>
                     <van-button slot="button" size="small" disabled type="primary" v-show="hasSendSms">{{second}}秒后重新获取</van-button>-->
