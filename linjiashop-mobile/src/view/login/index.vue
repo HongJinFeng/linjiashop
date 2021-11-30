@@ -12,18 +12,18 @@
                     placeholder="请输入账号名"
             />
             </van-cell-group>
-<!--            <van-cell-group v-show="show1">
+            <van-cell-group v-show="show1">
                 <van-field
                         v-model="smsCode"
                         center
                         clearable
-                        label="验证码"
-                        placeholder="请输入验证码"
+                        label="密码"
+                        placeholder="请输入密码"
                 >
-                    <van-button slot="button" size="small" type="primary" @click="sendSms" v-show="!hasSendSms">发送验证码</van-button>
-                    <van-button slot="button" size="small" disabled type="primary" v-show="hasSendSms">{{second}}秒后重新获取</van-button>
+<!--                    <van-button slot="button" size="small" type="primary" @click="sendSms" v-show="!hasSendSms">发送验证码</van-button>
+                    <van-button slot="button" size="small" disabled type="primary" v-show="hasSendSms">{{second}}秒后重新获取</van-button>-->
                 </van-field>
-            </van-cell-group>-->
+            </van-cell-group>
             <van-cell-group  v-show="show2">
             <van-field
                     v-model="password"

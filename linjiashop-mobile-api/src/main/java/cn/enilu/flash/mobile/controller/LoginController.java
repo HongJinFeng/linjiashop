@@ -71,7 +71,7 @@ public class LoginController extends BaseController {
      * @return
      */
     @RequestMapping(value = "loginOrReg", method = RequestMethod.POST)
-    public Object loginOrReg(@RequestParam String mobile/*, @RequestParam String password*/) {
+    public Object loginOrReg(@RequestParam String mobile, @RequestParam String smsCode) {
         try {
             logger.info("用户登录:" + mobile);
             //1,
@@ -80,12 +80,15 @@ public class LoginController extends BaseController {
             if (user != null) {
                 return Rets.failure("用户名已存在");
             }
+            if (smsCode == null || smsCode.length() <= 7) {
+                return Rets.failure("密码必须超过8位");
+            }
             Map<String, Object> result = new HashMap<>(6);
             //if (validateRet) {
             //初始化6位密码
-            String initPassword = RandomUtil.getRandomString(6);
-            user = shopUserService.register(mobile, initPassword);
-            result.put("initPassword", initPassword);
+            //String initPassword = RandomUtil.getRandomString(6);
+            user = shopUserService.register(mobile, smsCode);
+            result.put("initPassword", smsCode);
             String token = userService.loginForToken(new JwtUser(user));
             user.setLastLoginTime(new Date());
             shopUserService.update(user);
